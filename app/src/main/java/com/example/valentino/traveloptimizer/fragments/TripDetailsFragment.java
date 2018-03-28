@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +13,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.valentino.traveloptimizer.R;
+import com.example.valentino.traveloptimizer.api.ApiClient;
+import com.example.valentino.traveloptimizer.api.ApiInterface;
 import com.example.valentino.traveloptimizer.models.Trip;
+import com.example.valentino.traveloptimizer.utilities.CommonDependencyProvider;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TripDetailsFragment extends Fragment {
     private String city;
@@ -91,6 +99,14 @@ public class TripDetailsFragment extends Fragment {
             }
         });
 
+        FloatingActionButton fab2 = root.findViewById(R.id.fab2);
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteTrip();
+            }
+        });
+
         return root;
     }
 
@@ -104,6 +120,27 @@ public class TripDetailsFragment extends Fragment {
         String myFormat = "hh:mm a"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         label.setText(" " + sdf.format(date.getTime()));
+    }
+
+    private void deleteTrip() {
+        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
+        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
+        ApiInterface apiInterface = ApiClient.getApiInstance();
+        Call<Void> call = apiInterface.deleteTrip(userEmail, currTrip.getTripId());
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.d("DeleteTrip", "Successful");
+                getActivity().getFragmentManager().popBackStack();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d("DeleteTrip", "Retrofit failed to get data");
+                t.printStackTrace();
+                call.cancel();
+            }
+        });
     }
 
 }

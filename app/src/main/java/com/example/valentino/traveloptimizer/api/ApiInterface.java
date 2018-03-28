@@ -45,7 +45,7 @@ public interface ApiInterface {
     Call<Void> putTripData(@Path("email") String email, @Path("tid") String tid, @Body Trip trip);
 
     @DELETE("prod/user/{email}/trip/{tid}")
-    Call<Trip> deleteTrip(@Body Trip trip);
+    Call<Void> deleteTrip(@Path("email") String email, @Path("tid") String tid);
 
     @GET("/prod/place")
     Call<List<Place>> getAllPlaces();

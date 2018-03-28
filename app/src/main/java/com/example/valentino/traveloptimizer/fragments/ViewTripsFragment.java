@@ -128,7 +128,7 @@ public class ViewTripsFragment extends Fragment {
         CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
         String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
         ApiInterface apiInterface = ApiClient.getApiInstance();
-        Call<TestApiTrip> call = apiInterface.testGetUserTrips("jsong78@email.com");
+        Call<TestApiTrip> call = apiInterface.testGetUserTrips(userEmail);
         call.enqueue(new Callback<TestApiTrip>() {
             @Override
             public void onResponse(Call<TestApiTrip> call, Response<TestApiTrip> response) {

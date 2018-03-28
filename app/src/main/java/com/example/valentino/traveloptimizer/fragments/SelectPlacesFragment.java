@@ -129,9 +129,12 @@ public class SelectPlacesFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ViewTripsFragment viewTripsFragment = new ViewTripsFragment();
+                Log.d("1. Itinerary", ""+selectedIdSet.size());
                 currTrip.setPlaces(new ArrayList<>(selectedIdSet));
+                Log.d("2. Itinerary", ""+currTrip.getPlaces().size());
                 currTrip.setItinerary(TextUtils.join(" ", currTrip.getPlaces()));
+                Log.d("3. Itinerary", ""+TextUtils.join(" ", currTrip.getPlaces()));
+
                 // Update Database Here
                 if (editing) {
                     putTrip(currTrip);
@@ -139,6 +142,22 @@ public class SelectPlacesFragment extends Fragment {
                 else {
                     postTrip(currTrip);
                 }
+            }
+        });
+
+        return root;
+    }
+
+    private void postTrip(Trip trip) {
+        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
+        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
+        ApiInterface apiInterface = ApiClient.getApiInstance();
+        Call<Void> call = apiInterface.postTripData(userEmail, trip);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.d("PostTrip", "Successful");
+                ViewTripsFragment viewTripsFragment = new ViewTripsFragment();
                 Bundle args = new Bundle();
                 args.putSerializable("Trip", currTrip);
                 viewTripsFragment.setArguments(args);
@@ -150,21 +169,6 @@ public class SelectPlacesFragment extends Fragment {
                 manager.beginTransaction()
                         .replace(R.id.content, viewTripsFragment)
                         .commit();
-            }
-        });
-
-        return root;
-    }
-
-    private void postTrip(Trip trip) {
-        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
-        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
-        ApiInterface apiInterface = ApiClient.getApiInstance();
-        Call<Void> call = apiInterface.postTripData("jsong78@email.com", trip);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.d("PostTrip", "Successful");
             }
 
             @Override
@@ -180,11 +184,23 @@ public class SelectPlacesFragment extends Fragment {
         CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
         String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
         ApiInterface apiInterface = ApiClient.getApiInstance();
-        Call<Void> call = apiInterface.putTripData( "jsong78@email.com", currTrip.getTripId(), trip);
+        Call<Void> call = apiInterface.putTripData( userEmail, currTrip.getTripId(), trip);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.d("PutTrip", "Successful");
+                ViewTripsFragment viewTripsFragment = new ViewTripsFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("Trip", currTrip);
+                viewTripsFragment.setArguments(args);
+                FragmentManager manager = getActivity().getFragmentManager();
+                if (manager.getBackStackEntryCount() > 0) {
+                    FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
+                    manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }
+                manager.beginTransaction()
+                        .replace(R.id.content, viewTripsFragment)
+                        .commit();
             }
 
             @Override

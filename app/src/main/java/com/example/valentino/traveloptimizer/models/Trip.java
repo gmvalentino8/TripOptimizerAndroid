@@ -115,6 +115,7 @@ public class Trip implements Serializable {
     }
 
     public String getItinerary() {
+
         return itinerary;
     }
 

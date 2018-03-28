@@ -76,7 +76,6 @@ public class SelectCityFragment extends Fragment {
                         .replace(R.id.content, createTripFragment)
                         .addToBackStack("selectCity")
                         .commit();
-                Toast.makeText(getContext(), supportedCities.get(position).name, Toast.LENGTH_LONG).show();
             }
 
             @Override
