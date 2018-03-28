@@ -25,6 +25,7 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.Mult
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.NewPasswordContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.ForgotPasswordHandler;
+import com.example.valentino.traveloptimizer.models.User;
 import com.example.valentino.traveloptimizer.utilities.CommonDependencyProvider;
 import com.example.valentino.traveloptimizer.R;
 
@@ -326,7 +327,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, " -- Auth Success");
             provider.getAppHelper().setCurrSession(cognitoUserSession);
             provider.getAppHelper().newDevice(device);
-            //provider.getAppHelper().setLoggedInUser(new User(username, "Person", (float) 4.5));
+            provider.getAppHelper().setLoggedInUser(username);
             closeWaitDialog();
             launchUser();
         }

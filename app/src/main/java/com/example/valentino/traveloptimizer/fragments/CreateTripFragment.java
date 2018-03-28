@@ -31,15 +31,16 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class CreateTripFragment extends Fragment implements View.OnClickListener {
-    private static final String CITY_PARAM = "City";
     final int REQUEST_PLACE_PICKER = 1;
 
     private boolean editing = false;
     private String city;
     private Trip currTrip;
+    private Trip editTrip;
     private Calendar arrivalDate = Calendar.getInstance();
     private Calendar departureDate = Calendar.getInstance();
-    private LatLng accommodationLatLng;
+    private Double accommodationLat;
+    private Double accommodationLng;
     private EditText arrivalDateEditText;
     private EditText arrivalTimeEditText;
     private EditText departureDateEditText;
@@ -55,9 +56,9 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            editing = getArguments().getBoolean("Editing", false);
+            editing = getArguments().getBoolean("Edit", false);
             currTrip = (Trip) getArguments().getSerializable("Trip");
-            city = currTrip.city;
+            city = currTrip.getCity();
         }
     }
 
@@ -88,13 +89,15 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
         accommodationEditText.setClickable(true);
         accommodationEditText.setOnClickListener(this);
         if (editing) {
-            arrivalDate.setTimeInMillis(currTrip.startDate);
+            arrivalDate.setTimeInMillis(currTrip.getStartDate());
             setDateLabel(arrivalDate, arrivalDateEditText);
             setTimeLabel(arrivalDate, arrivalTimeEditText);
-            departureDate.setTimeInMillis(currTrip.endDate);
+            departureDate.setTimeInMillis(currTrip.getEndDate());
             setDateLabel(departureDate, departureDateEditText);
             setTimeLabel(departureDate, departureTimeEditText);
-            accommodationEditText.setText(currTrip.startName);
+            accommodationEditText.setText(currTrip.getStartName());
+            accommodationLat = currTrip.getStartLat();
+            accommodationLng = currTrip.getStartLng();
         }
         FloatingActionButton fab = root.findViewById(R.id.fab);
         fab.setOnClickListener(this);
@@ -170,7 +173,9 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
             final Place place = PlacePicker.getPlace(getContext(), data);
             final CharSequence name = place.getName();
             final CharSequence address = place.getAddress();
-            accommodationLatLng = place.getLatLng();
+            LatLng accommodationLatLng = place.getLatLng();
+            accommodationLat = accommodationLatLng.latitude;
+            accommodationLng = accommodationLatLng.longitude;
             String attributions = PlacePicker.getAttributions(data);
             if (attributions == null) {
                 attributions = "";
@@ -206,13 +211,14 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.fab:
                 SelectPlacesFragment selectPlacesFragment = new SelectPlacesFragment();
-                currTrip.startDate = arrivalDate.getTimeInMillis();
-                currTrip.endDate = departureDate.getTimeInMillis();
-                currTrip.startLat = accommodationLatLng.latitude;
-                currTrip.startLng = accommodationLatLng.longitude;
-                currTrip.startName = accommodationEditText.getText().toString();
+                currTrip.setStartDate(arrivalDate.getTimeInMillis());
+                currTrip.setEndDate(departureDate.getTimeInMillis());
+                currTrip.setStartLat(accommodationLat);
+                currTrip.setStartLng(accommodationLng);
+                currTrip.setStartName(accommodationEditText.getText().toString());
                 Bundle args = getArguments();
                 args.putSerializable("Trip", currTrip);
+                args.putBoolean("Edit", editing);
                 selectPlacesFragment.setArguments(args);
                 getActivity().getFragmentManager()
                         .beginTransaction()

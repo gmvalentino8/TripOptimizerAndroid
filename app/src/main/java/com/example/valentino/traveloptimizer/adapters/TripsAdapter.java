@@ -13,6 +13,7 @@ import com.example.valentino.traveloptimizer.R;
 import com.example.valentino.traveloptimizer.models.City;
 import com.example.valentino.traveloptimizer.models.Trip;
 
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -38,12 +39,17 @@ public class TripsAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Trip data = tripsDataSet.get(position);
         TripViewHolder tripHolder = ((TripViewHolder) holder);
-        tripHolder.tripsCityTextView.setText(data.city);
-        int imageId = mContext.getResources().getIdentifier(data.city.toLowerCase(), "drawable", mContext.getPackageName());
+        tripHolder.tripsCityTextView.setText(data.getCity());
+        int imageId = mContext.getResources().getIdentifier(data.getCity().toLowerCase(), "drawable", mContext.getPackageName());
         tripHolder.tripsCityImageView.setImageResource(imageId);
-        tripHolder.tripsDateTextView.setText("Jan 1 - Jan 5, 2018");
+        Calendar startDate = Calendar.getInstance();
+        startDate.setTimeInMillis(data.getStartDate());
+        Calendar endDate = Calendar.getInstance();
+        endDate.setTimeInMillis(data.getEndDate());
+        tripHolder.tripsDateTextView.setText(startDate.get(Calendar.MONTH) + " " + startDate.get(Calendar.DATE) + " - "
+                + endDate.get(Calendar.MONTH) + " " + endDate.get(Calendar.DATE));
         tripHolder.tripsCountdownTextView.setText("3 Months Ago");
-        tripHolder.tripsPlacesCountTextView.setText(data.places.size() + " Places Visited");
+//        tripHolder.tripsPlacesCountTextView.setText(data.getItinerary().split(" ").length + " Places Visited");
     }
 
     @Override

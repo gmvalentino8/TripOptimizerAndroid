@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,7 @@ public class TripDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             currTrip = (Trip) getArguments().getSerializable("Trip");
-            city = currTrip.city;
+            city = currTrip.getCity();
         }
     }
 
@@ -65,13 +66,31 @@ public class TripDetailsFragment extends Fragment {
         accommodationEditText = root.findViewById(R.id.accommodationEditText);
         accommodationEditText.setFocusable(false);
         accommodationEditText.setClickable(false);
-        arrivalDate.setTimeInMillis(currTrip.startDate);
+        arrivalDate.setTimeInMillis(currTrip.getStartDate());
         setDateLabel(arrivalDate, arrivalDateEditText);
         setTimeLabel(arrivalDate, arrivalTimeEditText);
-        departureDate.setTimeInMillis(currTrip.endDate);
+        departureDate.setTimeInMillis(currTrip.getEndDate());
         setDateLabel(departureDate, departureDateEditText);
         setTimeLabel(departureDate, departureTimeEditText);
-        accommodationEditText.setText(currTrip.startName);
+        accommodationEditText.setText(currTrip.getStartName());
+
+        FloatingActionButton fab = root.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateTripFragment createTripFragment = new CreateTripFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("Trip", currTrip);
+                args.putBoolean("Edit", true);
+                createTripFragment.setArguments(args);
+                getActivity().getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.content, createTripFragment)
+                        .addToBackStack("editCreateTrip")
+                        .commit();
+            }
+        });
+
         return root;
     }
 

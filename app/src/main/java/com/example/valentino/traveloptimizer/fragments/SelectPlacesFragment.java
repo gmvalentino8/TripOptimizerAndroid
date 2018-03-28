@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,8 +20,13 @@ import android.widget.Toast;
 import com.example.valentino.traveloptimizer.R;
 import com.example.valentino.traveloptimizer.adapters.PlacesAdapter;
 import com.example.valentino.traveloptimizer.adapters.TripsAdapter;
+import com.example.valentino.traveloptimizer.api.ApiClient;
+import com.example.valentino.traveloptimizer.api.ApiInterface;
 import com.example.valentino.traveloptimizer.models.Place;
+import com.example.valentino.traveloptimizer.models.TestApiPlace;
+import com.example.valentino.traveloptimizer.models.TestApiTrip;
 import com.example.valentino.traveloptimizer.models.Trip;
+import com.example.valentino.traveloptimizer.utilities.CommonDependencyProvider;
 import com.example.valentino.traveloptimizer.utilities.RecyclerTouchListener;
 
 import java.util.ArrayList;
@@ -28,6 +34,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SelectPlacesFragment extends Fragment {
     private boolean editing;
@@ -46,29 +56,39 @@ public class SelectPlacesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        selectedIdSet = new HashSet<>();
-        selectedIdSet.add("2");
         places = new ArrayList<>();
-        places.add(new Place("1","Test 1", "Test Address 1, Chicago, IL, USA",
-                "Restaurant", "10:00AM", "11:00pm"));
-        places.add(new Place("2","Test 2", "Test Address 2, Chicago, IL, USA",
-                "Sightseeing", "8:00AM", "5:00pm"));
-        places.add(new Place("3","Test 3", "Test Address 3, Chicago, IL, USA",
-                "Shopping", "9:00AM", "9:00pm"));
-        places.add(new Place("4","Test 4", "Test Address 4, Chicago, IL, USA",
-                "Entertainment", "11:00AM", "11:30pm"));
-        places.add(new Place("5","Test 5", "Test Address 5, Chicago, IL, USA",
-                "Park", "7:00AM", "4:30pm"));
-        places.add(new Place("6","Test 6", "Test Address 6, Chicago, IL, USA",
-                "Museum", "8:00AM", "8:00pm"));
+        selectedIdSet = new HashSet<>();
 
         if (getArguments() != null) {
-            editing = getArguments().getBoolean("Editing", false);
+            editing = getArguments().getBoolean("Edit", false);
             currTrip = (Trip) getArguments().getSerializable("Trip");
             if (editing && currTrip != null) {
-                selectedIdSet = new HashSet<>(currTrip.places);
+                selectedIdSet = new HashSet<>(currTrip.getPlaces());
             }
         }
+    }
+
+    private void testGetPlaces() {
+        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
+        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
+        ApiInterface apiInterface = ApiClient.getApiInstance();
+        Call<TestApiPlace> call = apiInterface.testGetAllPlaces();
+        call.enqueue(new Callback<TestApiPlace>() {
+            @Override
+            public void onResponse(Call<TestApiPlace> call, Response<TestApiPlace> response) {
+                TestApiPlace resource = response.body();
+                places = resource.getData();
+                adapter = new PlacesAdapter(places, selectedIdSet, getContext());
+                recyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(Call<TestApiPlace> call, Throwable t) {
+                Log.d("ViewPlacesFragment", "Retrofit failed to get data");
+                t.printStackTrace();
+                call.cancel();
+            }
+        });
     }
 
     @Override
@@ -86,15 +106,15 @@ public class SelectPlacesFragment extends Fragment {
             @Override
             public void onClick(View view, int position) {
                 Place item = places.get(position);
-                if (selectedIdSet.contains(item.placeId)) {
+                if (selectedIdSet.contains(item.getPlaceId())) {
                     // Remove item
-                    selectedIdSet.remove(item.placeId);
+                    selectedIdSet.remove(item.getPlaceId());
                     ((CardView) view).setCardBackgroundColor(Color.WHITE);
 
                 }
                 else {
                     // Add item
-                    selectedIdSet.add(item.placeId);
+                    selectedIdSet.add(item.getPlaceId());
                     ((CardView) view).setCardBackgroundColor(Color.GRAY);
                 }
             }
@@ -103,15 +123,22 @@ public class SelectPlacesFragment extends Fragment {
             public void onLongClick(View view, int position) {
             }
         }));
+        testGetPlaces();
 
         FloatingActionButton fab = root.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ViewTripsFragment viewTripsFragment = new ViewTripsFragment();
-                currTrip.places = new ArrayList<>(selectedIdSet);
+                currTrip.setPlaces(new ArrayList<>(selectedIdSet));
+                currTrip.setItinerary(TextUtils.join(" ", currTrip.getPlaces()));
                 // Update Database Here
-
+                if (editing) {
+                    putTrip(currTrip);
+                }
+                else {
+                    postTrip(currTrip);
+                }
                 Bundle args = new Bundle();
                 args.putSerializable("Trip", currTrip);
                 viewTripsFragment.setArguments(args);
@@ -129,4 +156,43 @@ public class SelectPlacesFragment extends Fragment {
         return root;
     }
 
+    private void postTrip(Trip trip) {
+        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
+        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
+        ApiInterface apiInterface = ApiClient.getApiInstance();
+        Call<Void> call = apiInterface.postTripData("jsong78@email.com", trip);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.d("PostTrip", "Successful");
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d("PostTrip", "Retrofit failed to get data");
+                t.printStackTrace();
+                call.cancel();
+            }
+        });
+    }
+
+    private void putTrip(Trip trip) {
+        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
+        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
+        ApiInterface apiInterface = ApiClient.getApiInstance();
+        Call<Void> call = apiInterface.putTripData( "jsong78@email.com", currTrip.getTripId(), trip);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.d("PutTrip", "Successful");
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d("PutTrip", "Retrofit failed to get data");
+                t.printStackTrace();
+                call.cancel();
+            }
+        });
+    }
 }

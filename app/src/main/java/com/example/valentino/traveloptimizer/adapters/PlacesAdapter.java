@@ -43,14 +43,14 @@ public class PlacesAdapter extends RecyclerView.Adapter {
         Place data = placesDataSet.get(position);
         PlacesAdapter.PlaceViewHolder placeHolder = ((PlacesAdapter.PlaceViewHolder) holder);
 
-        if (selectedIdSet.contains(data.placeId)) {
+        if (selectedIdSet.contains(data.getPlaceId())) {
             ((PlaceViewHolder) holder).placeCardView.setCardBackgroundColor(Color.GRAY);
         }
 
-        placeHolder.placeNameTextView.setText(data.name);
-        placeHolder.placeCategoryTextView.setText(data.category);
-        placeHolder.placeTimeTextView.setText(data.openTime + " - " + data.closeTime);
-        placeHolder.placeAddressTextView.setText(data.address);
+        placeHolder.placeNameTextView.setText(data.getName());
+        placeHolder.placeCategoryTextView.setText(data.getCategory());
+        placeHolder.placeTimeTextView.setText(data.getOpenTime() + " - " + data.getCloseTime());
+        placeHolder.placeAddressTextView.setText(data.getAddress());
     }
 
     @Override

@@ -1,5 +1,6 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.valentino.traveloptimizer.fragments.TripDetailsFragment">
@@ -28,35 +29,35 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/divider">
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/divider">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <android.support.v7.widget.CardView
-                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/arrivalCardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="4dp"
                     card_view:cardCornerRadius="5dp"
-                    card_view:cardMaxElevation="10dp"
-                    card_view:cardElevation="6dp">
+                    card_view:cardElevation="6dp"
+                    card_view:cardMaxElevation="10dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_margin="5dp">
+                        android:layout_margin="5dp"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/arriveLabel"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textSize="20sp"
+                            android:layout_marginTop="8dp"
                             android:text="Arriving:"
-                            android:layout_marginTop="8dp"/>
+                            android:textSize="20sp" />
 
                         <LinearLayout
                             android:id="@+id/arrivalLinearLayout"
@@ -68,20 +69,18 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="4"
-                                android:textSize="16sp"
-                                android:gravity="center"
                                 android:drawableStart="@drawable/ic_events"
-                                />
+                                android:gravity="center"
+                                android:textSize="16sp" />
 
                             <EditText
                                 android:id="@+id/arrivalTimeEditText"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3"
-                                android:textSize="16sp"
-                                android:gravity="center"
                                 android:drawableStart="@drawable/ic_time_black"
-                                />
+                                android:gravity="center"
+                                android:textSize="16sp" />
 
                         </LinearLayout>
 
@@ -89,30 +88,29 @@
 
                 </android.support.v7.widget.CardView>
 
-                <android.support.v7.widget.CardView
-                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/departureCardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/arrivalCardView"
                     android:layout_margin="4dp"
                     card_view:cardCornerRadius="5dp"
-                    card_view:cardMaxElevation="10dp"
-                    card_view:cardElevation="6dp">
+                    card_view:cardElevation="6dp"
+                    card_view:cardMaxElevation="10dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_margin="5dp">
+                        android:layout_margin="5dp"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/departureLabel"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textSize="20sp"
+                            android:layout_marginTop="8dp"
                             android:text="Departing:"
-                            android:layout_marginTop="8dp"/>
+                            android:textSize="20sp" />
 
                         <LinearLayout
                             android:id="@+id/departureLinearLayout"
@@ -124,20 +122,18 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="4"
-                                android:textSize="18sp"
-                                android:gravity="center"
                                 android:drawableStart="@drawable/ic_events"
-                                />
+                                android:gravity="center"
+                                android:textSize="16sp" />
 
                             <EditText
                                 android:id="@+id/departureTimeEditText"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3"
-                                android:textSize="18sp"
-                                android:gravity="center"
                                 android:drawableStart="@drawable/ic_time_black"
-                                />
+                                android:gravity="center"
+                                android:textSize="16sp" />
 
                         </LinearLayout>
 
@@ -146,79 +142,77 @@
 
                 </android.support.v7.widget.CardView>
 
-                <android.support.v7.widget.CardView
-                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/accommodationCardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/departureCardView"
                     android:layout_margin="4dp"
                     card_view:cardCornerRadius="5dp"
-                    card_view:cardMaxElevation="10dp"
-                    card_view:cardElevation="6dp">
+                    card_view:cardElevation="6dp"
+                    card_view:cardMaxElevation="10dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_margin="5dp">
+                        android:layout_margin="5dp"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/accommodationLabel"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textSize="20sp"
+                            android:layout_marginTop="8dp"
                             android:text="Staying At:"
-                            android:layout_marginTop="8dp"/>
+                            android:textSize="20sp" />
 
                         <EditText
                             android:id="@+id/accommodationEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textSize="14sp"
-                            android:hint=" Address of Accommodation"
                             android:drawableStart="@drawable/ic_location"
-                            />
+                            android:hint=" Address of Accommodation"
+                            android:textSize="14sp" />
 
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
 
                 <!--<android.support.v7.widget.CardView-->
-                    <!--xmlns:card_view="http://schemas.android.com/apk/res-auto"-->
-                    <!--android:id="@+id/placesCardView"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_below="@+id/accommodationCardView"-->
-                    <!--android:layout_margin="4dp"-->
-                    <!--card_view:cardCornerRadius="5dp"-->
-                    <!--card_view:cardMaxElevation="10dp"-->
-                    <!--card_view:cardElevation="6dp">-->
+                <!--xmlns:card_view="http://schemas.android.com/apk/res-auto"-->
+                <!--android:id="@+id/placesCardView"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_below="@+id/accommodationCardView"-->
+                <!--android:layout_margin="4dp"-->
+                <!--card_view:cardCornerRadius="5dp"-->
+                <!--card_view:cardMaxElevation="10dp"-->
+                <!--card_view:cardElevation="6dp">-->
 
-                    <!--<LinearLayout-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:orientation="vertical"-->
-                        <!--android:layout_margin="5dp">-->
+                <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="vertical"-->
+                <!--android:layout_margin="5dp">-->
 
-                        <!--<TextView-->
-                            <!--android:id="@+id/placesLabel"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:textSize="20sp"-->
-                            <!--android:text="Going To:"-->
-                            <!--android:layout_marginTop="8dp"/>-->
+                <!--<TextView-->
+                <!--android:id="@+id/placesLabel"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textSize="20sp"-->
+                <!--android:text="Going To:"-->
+                <!--android:layout_marginTop="8dp"/>-->
 
-                        <!--<EditText-->
-                            <!--android:id="@+id/placesEditText"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:textSize="14sp"-->
-                            <!--android:hint=" Address of Accommodation"-->
-                            <!--android:drawableStart="@drawable/places_ic_clear"-->
-                            <!--/>-->
+                <!--<EditText-->
+                <!--android:id="@+id/placesEditText"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textSize="14sp"-->
+                <!--android:hint=" Address of Accommodation"-->
+                <!--android:drawableStart="@drawable/places_ic_clear"-->
+                <!--/>-->
 
-                    <!--</LinearLayout>-->
+                <!--</LinearLayout>-->
 
                 <!--</android.support.v7.widget.CardView>-->
 
@@ -227,5 +221,16 @@
         </ScrollView>
 
     </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:elevation="20dp"
+        app:borderWidth="0dp"
+        app:srcCompat="@drawable/ic_edit"
+        android:tint="@android:color/white"/>
+
 
 </android.support.design.widget.CoordinatorLayout>

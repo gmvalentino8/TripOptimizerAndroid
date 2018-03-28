@@ -27,6 +27,7 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserSession;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cognitoidentityprovider.model.AttributeType;
+import com.example.valentino.traveloptimizer.models.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +58,9 @@ public class AppHelper {
     private Map<String, String> firstTimeLogInUpDatedAttributes;
     private String firstTimeLoginNewPassword;
     private List<String> mfaAllOptionsCode;
+
+    private String loggedInUser;
+
 
     /**
      * Add your pool id here
@@ -361,12 +365,12 @@ public class AppHelper {
         }
     }
 
-//    public User getLoggedInUser() {
-//        return loggedInUser;
-//    }
-//
-//    public void setLoggedInUser(User loggedInUser) {
-//        this.loggedInUser = loggedInUser;
-//    }
+    public String getLoggedInUser() {
+        return loggedInUser;
+    }
+
+    public void setLoggedInUser(String loggedInUser) {
+        this.loggedInUser = loggedInUser;
+    }
 }
 

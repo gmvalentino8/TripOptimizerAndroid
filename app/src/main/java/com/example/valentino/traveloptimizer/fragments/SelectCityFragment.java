@@ -63,7 +63,7 @@ public class SelectCityFragment extends Fragment {
             public void onClick(View view, int position) {
                 if (currTrip == null) {
                     currTrip = new Trip();
-                    currTrip.city = supportedCities.get(position).name;
+                    currTrip.setCity(supportedCities.get(position).name);
                 }
 
                 CreateTripFragment createTripFragment = new CreateTripFragment();

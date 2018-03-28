@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +19,20 @@ import com.example.valentino.traveloptimizer.R;
 import com.example.valentino.traveloptimizer.activities.SelectCityActivity;
 import com.example.valentino.traveloptimizer.adapters.CitiesAdapter;
 import com.example.valentino.traveloptimizer.adapters.TripsAdapter;
+import com.example.valentino.traveloptimizer.api.ApiClient;
+import com.example.valentino.traveloptimizer.api.ApiInterface;
 import com.example.valentino.traveloptimizer.models.City;
+import com.example.valentino.traveloptimizer.models.TestApiTrip;
 import com.example.valentino.traveloptimizer.models.Trip;
+import com.example.valentino.traveloptimizer.utilities.CommonDependencyProvider;
 import com.example.valentino.traveloptimizer.utilities.RecyclerTouchListener;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ViewTripsFragment extends Fragment {
     private List<Trip> trips;
@@ -39,10 +48,6 @@ public class ViewTripsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         trips = new ArrayList<>();
-        trips.add(new Trip("1", "Chicago"));
-        trips.add(new Trip("2", "Tokyo"));
-        trips.add(new Trip("3", "Seoul"));
-        trips.add(new Trip("asdf", "London"));
     }
 
     @Override
@@ -87,8 +92,58 @@ public class ViewTripsFragment extends Fragment {
                         .commit();
             }
         });
-
         return root;
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        testGetUserTrips();
+    }
+
+    private void getUserTrips() {
+        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
+        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
+        ApiInterface apiInterface = ApiClient.getApiInstance();
+        Call<List<Trip>> call = apiInterface.getUserTrips("jsong78@email.com");
+        call.enqueue(new Callback<List<Trip>>() {
+            @Override
+            public void onResponse(Call<List<Trip>> call, Response<List<Trip>> response) {
+                System.out.println(response.body());
+                List<Trip> resource = response.body();
+                trips = resource;
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<List<Trip>> call, Throwable t) {
+                Log.d("ViewTripsFragment", "Retrofit failed to get data");
+                t.printStackTrace();
+                call.cancel();
+            }
+        });
+    }
+
+    private void testGetUserTrips() {
+        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
+        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
+        ApiInterface apiInterface = ApiClient.getApiInstance();
+        Call<TestApiTrip> call = apiInterface.testGetUserTrips("jsong78@email.com");
+        call.enqueue(new Callback<TestApiTrip>() {
+            @Override
+            public void onResponse(Call<TestApiTrip> call, Response<TestApiTrip> response) {
+                TestApiTrip resource = response.body();
+                trips = resource.getData();
+                adapter = new TripsAdapter(trips, getContext());
+                recyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(Call<TestApiTrip> call, Throwable t) {
+                Log.d("ViewTripsFragment", "Retrofit failed to get data");
+                t.printStackTrace();
+                call.cancel();
+            }
+        });
     }
 }
