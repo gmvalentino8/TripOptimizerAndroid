@@ -9,7 +9,7 @@ import java.util.List;
 public class User {
     String email;
     String name;
-    String birthday;
+    String birthdate;
     String address;
     List trips;
 }

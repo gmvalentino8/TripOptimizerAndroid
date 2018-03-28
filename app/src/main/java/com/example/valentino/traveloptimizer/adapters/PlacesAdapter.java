@@ -1,7 +1,9 @@
 package com.example.valentino.traveloptimizer.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import com.example.valentino.traveloptimizer.R;
 import com.example.valentino.traveloptimizer.models.Place;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Valentino on 3/28/18.
@@ -20,11 +23,13 @@ import java.util.List;
 public class PlacesAdapter extends RecyclerView.Adapter {
 
     private List<Place> placesDataSet;
+    private Set<String> selectedIdSet;
     private Context mContext;
 
-    public PlacesAdapter(List<Place> places, Context context) {
-        placesDataSet = places;
-        mContext = context;
+    public PlacesAdapter(List<Place> places, Set<String> selectedIdSet, Context context) {
+        this.placesDataSet = places;
+        this.selectedIdSet = selectedIdSet;
+        this.mContext = context;
     }
 
     @Override
@@ -37,6 +42,11 @@ public class PlacesAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Place data = placesDataSet.get(position);
         PlacesAdapter.PlaceViewHolder placeHolder = ((PlacesAdapter.PlaceViewHolder) holder);
+
+        if (selectedIdSet.contains(data.placeId)) {
+            ((PlaceViewHolder) holder).placeCardView.setCardBackgroundColor(Color.GRAY);
+        }
+
         placeHolder.placeNameTextView.setText(data.name);
         placeHolder.placeCategoryTextView.setText(data.category);
         placeHolder.placeTimeTextView.setText(data.openTime + " - " + data.closeTime);
@@ -49,6 +59,7 @@ public class PlacesAdapter extends RecyclerView.Adapter {
     }
 
     public static class PlaceViewHolder extends RecyclerView.ViewHolder {
+        public CardView placeCardView;
         public TextView placeNameTextView;
         public TextView placeCategoryTextView;
         public TextView placeTimeTextView;
@@ -56,6 +67,7 @@ public class PlacesAdapter extends RecyclerView.Adapter {
 
         public PlaceViewHolder(View itemView) {
             super(itemView);
+            placeCardView = itemView.findViewById(R.id.placeCardView);
             placeNameTextView = itemView.findViewById(R.id.placeNameTextView);
             placeCategoryTextView = itemView.findViewById(R.id.placeCategoryTextView);
             placeTimeTextView = itemView.findViewById(R.id.placeTimesTextView);

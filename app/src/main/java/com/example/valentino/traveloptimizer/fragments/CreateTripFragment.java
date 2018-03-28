@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,7 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
     private static final String CITY_PARAM = "City";
     final int REQUEST_PLACE_PICKER = 1;
 
-
+    private boolean editing = false;
     private String city;
     private Trip currTrip;
     private Calendar arrivalDate = Calendar.getInstance();
@@ -54,9 +55,9 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            editing = getArguments().getBoolean("Editing", false);
             currTrip = (Trip) getArguments().getSerializable("Trip");
             city = currTrip.city;
-            //city = getArguments().getString(CITY_PARAM);
         }
     }
 
@@ -86,8 +87,17 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
         accommodationEditText.setFocusable(false);
         accommodationEditText.setClickable(true);
         accommodationEditText.setOnClickListener(this);
-        nextButton = root.findViewById(R.id.tripsNextButton);
-        nextButton.setOnClickListener(this);
+        if (editing) {
+            arrivalDate.setTimeInMillis(currTrip.startDate);
+            setDateLabel(arrivalDate, arrivalDateEditText);
+            setTimeLabel(arrivalDate, arrivalTimeEditText);
+            departureDate.setTimeInMillis(currTrip.endDate);
+            setDateLabel(departureDate, departureDateEditText);
+            setTimeLabel(departureDate, departureTimeEditText);
+            accommodationEditText.setText(currTrip.startName);
+        }
+        FloatingActionButton fab = root.findViewById(R.id.fab);
+        fab.setOnClickListener(this);
 
         return root;
     }
@@ -194,7 +204,7 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
             case R.id.accommodationEditText:
                 onPickButtonClick();
                 break;
-            case R.id.tripsNextButton:
+            case R.id.fab:
                 SelectPlacesFragment selectPlacesFragment = new SelectPlacesFragment();
                 currTrip.startDate = arrivalDate.getTimeInMillis();
                 currTrip.endDate = departureDate.getTimeInMillis();
@@ -203,17 +213,12 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
                 currTrip.startName = accommodationEditText.getText().toString();
                 Bundle args = getArguments();
                 args.putSerializable("Trip", currTrip);
+                selectPlacesFragment.setArguments(args);
                 getActivity().getFragmentManager()
                         .beginTransaction()
                         .replace(R.id.content, selectPlacesFragment)
                         .addToBackStack("selectInfo")
                         .commit();
-
-//                args.putLong("ArrivalDate", arrivalDate.getTimeInMillis());
-//                args.putLong("DepartureDate", departureDate.getTimeInMillis());
-//                args.putDouble("AccommodationLat", accommodationLatLng.latitude);
-//                args.putDouble("AccommodationLng", accommodationLatLng.longitude);
-//                args.putString("AccommodationName", accommodationEditText.getText().toString());
                 break;
         }
     }

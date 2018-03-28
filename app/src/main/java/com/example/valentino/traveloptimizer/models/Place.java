@@ -15,7 +15,8 @@ public class Place {
     public String closeTime;
     public String city;
 
-    public Place(String name, String address, String category, String openTime, String closeTime) {
+    public Place(String placeId, String name, String address, String category, String openTime, String closeTime) {
+        this.placeId = placeId;
         this.name = name;
         this.address = address;
         this.category = category;
