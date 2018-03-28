@@ -1,8 +1,10 @@
 package com.example.valentino.traveloptimizer.fragments;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -16,7 +18,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.valentino.traveloptimizer.R;
-import com.google.firebase.database.Exclude;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,10 +30,13 @@ import java.util.Locale;
 
 public class CreateTripFragment extends Fragment implements View.OnClickListener {
     private static final String CITY_PARAM = "City";
+    final int REQUEST_PLACE_PICKER = 1;
+
 
     private String city;
     private Calendar arrivalDate = Calendar.getInstance();
     private Calendar departureDate = Calendar.getInstance();
+    private LatLng accommodationLatLng;
     private EditText arrivalDateEditText;
     private EditText arrivalTimeEditText;
     private EditText departureDateEditText;
@@ -69,14 +78,16 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
         departureTimeEditText.setFocusable(false);
         departureTimeEditText.setClickable(true);
         departureTimeEditText.setOnClickListener(this);
+        accommodationEditText = root.findViewById(R.id.accommodationEditText);
+        accommodationEditText.setFocusable(false);
+        accommodationEditText.setClickable(true);
+        accommodationEditText.setOnClickListener(this);
         nextButton = root.findViewById(R.id.tripsNextButton);
         nextButton.setOnClickListener(this);
 
         return root;
     }
 
-
-    @Exclude
     public void getDate(final Calendar dateCalendar, final EditText label) {
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -98,7 +109,6 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
         label.setText(" " + sdf.format(date.getTime()));
     }
 
-    @Exclude
     public void getTime(final Calendar dateCalendar, final EditText label) {
         final TimePickerDialog.OnTimeSetListener date = new TimePickerDialog.OnTimeSetListener() {
             @Override
@@ -120,6 +130,48 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
         label.setText(" " + sdf.format(date.getTime()));
     }
 
+    public void onPickButtonClick() {
+        // Construct an intent for the place picker
+        try {
+            PlacePicker.IntentBuilder intentBuilder =
+                    new PlacePicker.IntentBuilder();
+            Intent intent = intentBuilder.build(getActivity());
+            // Start the intent by requesting a result,
+            // identified by a request code.
+            startActivityForResult(intent, REQUEST_PLACE_PICKER);
+
+        } catch (GooglePlayServicesRepairableException e) {
+            // ...
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // ...
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode,
+                                    int resultCode, Intent data) {
+        if (requestCode == REQUEST_PLACE_PICKER
+                && resultCode == Activity.RESULT_OK) {
+            // The user has selected a place. Extract the name and address.
+            final Place place = PlacePicker.getPlace(getContext(), data);
+            final CharSequence name = place.getName();
+            final CharSequence address = place.getAddress();
+            accommodationLatLng = place.getLatLng();
+            String attributions = PlacePicker.getAttributions(data);
+            if (attributions == null) {
+                attributions = "";
+            }
+            if (place.getPlaceTypes().get(0) == 0) {
+                accommodationEditText.setText(address);
+            }
+            else {
+                accommodationEditText.setText(name);
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -135,7 +187,11 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
             case R.id.departureTimeEditText:
                 getTime(departureDate, departureTimeEditText);
                 break;
+            case R.id.accommodationEditText:
+                onPickButtonClick();
+                break;
             case R.id.tripsNextButton:
+                arrivalDate.getTimeInMillis();
                 break;
         }
     }
