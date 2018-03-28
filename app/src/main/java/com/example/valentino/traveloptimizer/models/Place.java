@@ -5,12 +5,23 @@ package com.example.valentino.traveloptimizer.models;
  */
 
 public class Place {
-    private String placeId;
-    private String name;
-    private String address;
-    private String lat;
-    private String lng;
-    private String category;
-    private String openTime;
-    private String closeTime;
+    public String placeId;
+    public String name;
+    public String address;
+    public String lat;
+    public String lng;
+    public String category;
+    public String openTime;
+    public String closeTime;
+    public String city;
+
+    public Place(String name, String address, String category, String openTime, String closeTime) {
+        this.name = name;
+        this.address = address;
+        this.category = category;
+        this.openTime = openTime;
+        this.closeTime = closeTime;
+        this.city = "Chicago";
+    }
+
 }

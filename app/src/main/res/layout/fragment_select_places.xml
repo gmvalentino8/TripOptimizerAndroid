@@ -5,7 +5,7 @@
     tools:context="com.example.valentino.traveloptimizer.fragments.SelectPlacesFragment">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/citiesRecyclerView"
+        android:id="@+id/placesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     </android.support.v7.widget.RecyclerView>

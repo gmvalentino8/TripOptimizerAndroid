@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.valentino.traveloptimizer.R;
+import com.example.valentino.traveloptimizer.models.Trip;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -34,6 +35,7 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
 
 
     private String city;
+    private Trip currTrip;
     private Calendar arrivalDate = Calendar.getInstance();
     private Calendar departureDate = Calendar.getInstance();
     private LatLng accommodationLatLng;
@@ -52,7 +54,9 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            city = getArguments().getString(CITY_PARAM);
+            currTrip = (Trip) getArguments().getSerializable("Trip");
+            city = currTrip.city;
+            //city = getArguments().getString(CITY_PARAM);
         }
     }
 
@@ -191,7 +195,25 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
                 onPickButtonClick();
                 break;
             case R.id.tripsNextButton:
-                arrivalDate.getTimeInMillis();
+                SelectPlacesFragment selectPlacesFragment = new SelectPlacesFragment();
+                currTrip.startDate = arrivalDate.getTimeInMillis();
+                currTrip.endDate = departureDate.getTimeInMillis();
+                currTrip.startLat = accommodationLatLng.latitude;
+                currTrip.startLng = accommodationLatLng.longitude;
+                currTrip.startName = accommodationEditText.getText().toString();
+                Bundle args = getArguments();
+                args.putSerializable("Trip", currTrip);
+                getActivity().getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.content, selectPlacesFragment)
+                        .addToBackStack("selectInfo")
+                        .commit();
+
+//                args.putLong("ArrivalDate", arrivalDate.getTimeInMillis());
+//                args.putLong("DepartureDate", departureDate.getTimeInMillis());
+//                args.putDouble("AccommodationLat", accommodationLatLng.latitude);
+//                args.putDouble("AccommodationLng", accommodationLatLng.longitude);
+//                args.putString("AccommodationName", accommodationEditText.getText().toString());
                 break;
         }
     }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.valentino.traveloptimizer.models.Trip;
 import com.example.valentino.traveloptimizer.utilities.RecyclerTouchListener;
 import com.example.valentino.traveloptimizer.adapters.CitiesAdapter;
 import com.example.valentino.traveloptimizer.R;
@@ -22,6 +23,7 @@ public class SelectCityFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
+    private Trip currTrip;
 
 
     public SelectCityFragment() {
@@ -31,6 +33,9 @@ public class SelectCityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+
+        }
         supportedCities = new ArrayList<City>();
         supportedCities.add(new City("Chicago", "chicago"));
         supportedCities.add(new City("Tokyo", "tokyo"));
@@ -56,9 +61,15 @@ public class SelectCityFragment extends Fragment {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
+                if (currTrip == null) {
+                    currTrip = new Trip();
+                    currTrip.city = supportedCities.get(position).name;
+                }
+
                 CreateTripFragment createTripFragment = new CreateTripFragment();
                 Bundle args = new Bundle();
-                args.putString("City", supportedCities.get(position).name);
+                //args.putString("City", supportedCities.get(position).name);
+                args.putSerializable("Trip", currTrip);
                 createTripFragment.setArguments(args);
                 getActivity().getFragmentManager()
                         .beginTransaction()
