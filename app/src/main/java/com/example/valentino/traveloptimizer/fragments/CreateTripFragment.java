@@ -22,10 +22,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class CreateTripFragment extends Fragment implements OnClickListener {
+public class CreateTripFragment extends Fragment implements View.OnClickListener {
     private static final String CITY_PARAM = "City";
 
     private String city;
+    private Calendar arrivalDate = Calendar.getInstance();
+    private Calendar departureDate = Calendar.getInstance();
     private EditText arrivalDateEditText;
     private EditText arrivalTimeEditText;
     private EditText departureDateEditText;
@@ -52,10 +54,23 @@ public class CreateTripFragment extends Fragment implements OnClickListener {
         TextView cityName = root.findViewById(R.id.tripCityLabel);
         cityName.setText("Trip to " + city);
         arrivalDateEditText = root.findViewById(R.id.arrivalDateEditText);
+        arrivalDateEditText.setFocusable(false);
+        arrivalDateEditText.setClickable(true);
+        arrivalDateEditText.setOnClickListener(this);
         arrivalTimeEditText = root.findViewById(R.id.arrivalTimeEditText);
+        arrivalTimeEditText.setFocusable(false);
+        arrivalTimeEditText.setClickable(true);
+        arrivalTimeEditText.setOnClickListener(this);
         departureDateEditText = root.findViewById(R.id.departureDateEditText);
+        departureDateEditText.setFocusable(false);
+        departureDateEditText.setClickable(true);
+        departureDateEditText.setOnClickListener(this);
         departureTimeEditText = root.findViewById(R.id.departureTimeEditText);
+        departureTimeEditText.setFocusable(false);
+        departureTimeEditText.setClickable(true);
+        departureTimeEditText.setOnClickListener(this);
         nextButton = root.findViewById(R.id.tripsNextButton);
+        nextButton.setOnClickListener(this);
 
         return root;
     }
@@ -73,15 +88,14 @@ public class CreateTripFragment extends Fragment implements OnClickListener {
             }
         };
 
-        new DatePickerDialog(this, date, startDate
-                .get(Calendar.YEAR), startDate.get(Calendar.MONTH),
-                startDate.get(Calendar.DAY_OF_MONTH)).show();
+        new DatePickerDialog(getContext(), date, arrivalDate.get(Calendar.YEAR), arrivalDate.get(Calendar.MONTH),
+                arrivalDate.get(Calendar.DAY_OF_MONTH)).show();
     }
 
     public void setDateLabel(final Calendar date, EditText label) {
-        String myFormat = "MMM dd, yyyy"; //In which you need put here
+        String myFormat = "MMMM dd, yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-        label.setText(sdf.format(date.getTime()));
+        label.setText(" " + sdf.format(date.getTime()));
     }
 
     @Exclude
@@ -95,14 +109,34 @@ public class CreateTripFragment extends Fragment implements OnClickListener {
             }
         };
 
-        new TimePickerDialog(this, date, startDate
-                .get(Calendar.HOUR_OF_DAY), startDate.get(Calendar.MINUTE),
+        new TimePickerDialog(getContext(), date, arrivalDate
+                .get(Calendar.HOUR_OF_DAY), arrivalDate.get(Calendar.MINUTE),
                 false).show();
     }
 
     public void setTimeLabel(final Calendar date, EditText label) {
         String myFormat = "hh:mm a"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-        label.setText(sdf.format(date.getTime()));
+        label.setText(" " + sdf.format(date.getTime()));
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.arrivalDateEditText:
+                getDate(arrivalDate, arrivalDateEditText);
+                break;
+            case R.id.arrivalTimeEditText:
+                getTime(arrivalDate, arrivalTimeEditText);
+                break;
+            case R.id.departureDateEditText:
+                getDate(departureDate, departureDateEditText);
+                break;
+            case R.id.departureTimeEditText:
+                getTime(departureDate, departureTimeEditText);
+                break;
+            case R.id.tripsNextButton:
+                break;
+        }
     }
 }

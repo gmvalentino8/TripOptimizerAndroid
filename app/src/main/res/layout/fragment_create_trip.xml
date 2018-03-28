@@ -58,9 +58,9 @@
                     android:id="@+id/arrivalDateEditText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:hint=" Arrival Date"
-                    android:textSize="14sp"
+                    android:layout_weight="4"
+                    android:textSize="18sp"
+                    android:gravity="center"
                     android:drawableStart="@drawable/ic_events"
                     />
 
@@ -68,9 +68,9 @@
                     android:id="@+id/arrivalTimeEditText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:hint=" Arrival Time"
-                    android:textSize="14sp"
+                    android:layout_weight="3"
+                    android:textSize="18sp"
+                    android:gravity="center"
                     android:drawableStart="@drawable/ic_time"
                     />
 
@@ -117,9 +117,9 @@
                    android:id="@+id/departureDateEditText"
                    android:layout_width="0dp"
                    android:layout_height="wrap_content"
-                   android:layout_weight="3"
-                   android:textSize="14sp"
-                   android:hint=" Departure Date"
+                   android:layout_weight="4"
+                   android:textSize="18sp"
+                   android:gravity="center"
                    android:drawableStart="@drawable/ic_events"
                    />
 
@@ -127,9 +127,9 @@
                    android:id="@+id/departureTimeEditText"
                    android:layout_width="0dp"
                    android:layout_height="wrap_content"
-                   android:layout_weight="2"
-                   android:textSize="14sp"
-                   android:hint=" Departure Time"
+                   android:layout_weight="3"
+                   android:textSize="18sp"
+                   android:gravity="center"
                    android:drawableStart="@drawable/ic_time"
                    />
 
