@@ -61,12 +61,12 @@ public class ViewTripsFragment extends Fragment {
             public void onClick(View view, int position) {
                 TripDetailsFragment tripDetailsFragment = new TripDetailsFragment();
                 Bundle args = new Bundle();
-                args.putString("Trip", trips.get(position).tripId);
+                args.putSerializable("Trip", trips.get(position));
                 tripDetailsFragment.setArguments(args);
                 getActivity().getFragmentManager()
                         .beginTransaction()
                         .replace(R.id.content, tripDetailsFragment)
-                        .addToBackStack("selectCity")
+                        .addToBackStack("tripDetails")
                         .commit();
             }
 
@@ -79,8 +79,6 @@ public class ViewTripsFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent i = new Intent(getActivity(), SelectCityActivity.class);
-//                startActivity(i);
                 SelectCityFragment selectCityFragment = new SelectCityFragment();
                 getActivity().getFragmentManager()
                         .beginTransaction()
