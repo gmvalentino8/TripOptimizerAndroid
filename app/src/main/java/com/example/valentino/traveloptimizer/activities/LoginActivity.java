@@ -25,11 +25,20 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.Mult
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.NewPasswordContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.ForgotPasswordHandler;
+import com.example.valentino.traveloptimizer.api.ApiClient;
+import com.example.valentino.traveloptimizer.api.ApiInterface;
+import com.example.valentino.traveloptimizer.fragments.ViewTripsFragment;
 import com.example.valentino.traveloptimizer.models.User;
+import com.example.valentino.traveloptimizer.utilities.AppHelper;
 import com.example.valentino.traveloptimizer.utilities.CommonDependencyProvider;
 import com.example.valentino.traveloptimizer.R;
 
+import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
     private CommonDependencyProvider provider;
@@ -92,9 +101,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /*
-        TODO: GIVE A BETTER NAME. I have no clue what code "4" means
-     */
     protected void userBack(int resultCode, Intent data) {
         if(resultCode == RESULT_OK) {
             clearInput();
@@ -191,17 +197,33 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void confirmUser() {
-//        Intent confirmActivity = new Intent(this, SignUpConfirm.class);
-//        confirmActivity.putExtra("source","main");
-//        startActivityForResult(confirmActivity, 2);
-
+        Intent confirmActivity = new Intent(this, ConfirmRegisterActivity.class);
+        confirmActivity.putExtra("source","main");
+        startActivityForResult(confirmActivity, 2);
     }
 
     private void launchUser() {
-        Intent userActivity = new Intent(this, MainActivity.class);
-        userActivity.putExtra("name", username);
-        userActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivityForResult(userActivity, 4);
+        ApiInterface apiInterface = ApiClient.getApiInstance();
+        Call<List<User>> call = apiInterface.getUserData(username);
+        call.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                Log.d("PostTrip", "Successful");
+                provider.getAppHelper().setLoggedInUser(response.body().get(0));
+                Intent userActivity = new Intent(getApplicationContext(), MainActivity.class);
+                userActivity.putExtra("name", username);
+                userActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivityForResult(userActivity, 4);
+            }
+
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable t) {
+                Log.d("PostTrip", "Retrofit failed to get data");
+                t.printStackTrace();
+                call.cancel();
+            }
+        });
+
     }
 
     private void findCurrent() {
@@ -327,7 +349,6 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, " -- Auth Success");
             provider.getAppHelper().setCurrSession(cognitoUserSession);
             provider.getAppHelper().newDevice(device);
-            provider.getAppHelper().setLoggedInUser(username);
             closeWaitDialog();
             launchUser();
         }

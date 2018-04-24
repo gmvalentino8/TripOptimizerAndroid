@@ -9,23 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tripCityLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            android:layout_margin="10dp"/>
-
-        <View
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="#000000"
-            android:layout_below="@id/tripCityLabel"
-            android:layout_margin="5dp"
-            />
-
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -69,8 +52,9 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="4"
-                                android:drawableStart="@drawable/ic_events"
-                                android:gravity="center"
+                                android:drawableStart="@drawable/ic_calendar"
+                                android:drawablePadding="5dp"
+                                android:hint="Date"
                                 android:textSize="16sp" />
 
                             <EditText
@@ -79,7 +63,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3"
                                 android:drawableStart="@drawable/ic_time_black"
-                                android:gravity="center"
+                                android:drawablePadding="5dp"
+                                android:hint="Time"
                                 android:textSize="16sp" />
 
                         </LinearLayout>
@@ -122,8 +107,9 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="4"
-                                android:drawableStart="@drawable/ic_events"
-                                android:gravity="center"
+                                android:drawableStart="@drawable/ic_calendar"
+                                android:drawablePadding="5dp"
+                                android:hint="Date"
                                 android:textSize="16sp" />
 
                             <EditText
@@ -132,7 +118,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3"
                                 android:drawableStart="@drawable/ic_time_black"
-                                android:gravity="center"
+                                android:drawablePadding="5dp"
+                                android:hint="Time"
                                 android:textSize="16sp" />
 
                         </LinearLayout>
@@ -170,7 +157,7 @@
                             android:id="@+id/accommodationEditText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:drawableStart="@drawable/ic_location"
+                            android:drawableStart="@drawable/ic_place"
                             android:hint=" Address of Accommodation"
                             android:textSize="14sp" />
 

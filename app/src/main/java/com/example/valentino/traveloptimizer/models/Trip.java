@@ -7,10 +7,14 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Valentino on 3/27/18.
@@ -21,9 +25,9 @@ public class Trip implements Serializable {
     private String tripId;
     @SerializedName("city")
     private String city;
-    @Expose(serialize = false, deserialize = false)
+    @SerializedName("latitude")
     private double startLat;
-    @Expose(serialize = false, deserialize = false)
+    @SerializedName("longitude")
     private double startLng;
     @SerializedName("startLocation")
     private String startName;
@@ -35,6 +39,7 @@ public class Trip implements Serializable {
     private String itinerary;
     @SerializedName("email")
     private String email;
+    @Expose (serialize = false, deserialize = false)
     private List<String> places;
 
     public Trip() {}
@@ -53,10 +58,32 @@ public class Trip implements Serializable {
         this.startName = startName;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.itinerary = itinerary;
-        places = Arrays.asList(itinerary.split(" "));
     }
 
+    public String getStartDateString() {
+        return getDate(startDate);
+    }
+
+    public String getStartTimeString() {
+        return getTime(startDate);
+    }
+
+    public String getEndDateString() {
+        return getDate(endDate);
+    }
+
+    private String getTime(long longDate) {
+        Date date = new Date(longDate);
+        SimpleDateFormat formatter =
+                new SimpleDateFormat("h:mm a", Locale.getDefault());
+        return formatter.format(date);
+    }
+
+    private String getDate(long longDate) {
+        Date date = new Date(longDate);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/M/dd", Locale.getDefault());
+        return formatter.format(date);
+    }
 
     public String getTripId() {
         return tripId;
@@ -127,7 +154,7 @@ public class Trip implements Serializable {
         if (itinerary == null) {
             return new ArrayList<>();
         }
-        return Arrays.asList(itinerary.split(" "));
+        return Arrays.asList(itinerary.split(","));
     }
 
     public void setPlaces(List<String> places) {

@@ -14,10 +14,10 @@ public class Place {
     private String name;
     @SerializedName("address")
     private String address;
-    @Expose(serialize = false, deserialize = false)
-    private String lat;
-    @Expose(serialize = false, deserialize = false)
-    private String lng;
+    @SerializedName("latitude")
+    private Double lat;
+    @SerializedName("longitude")
+    private Double lng;
     @SerializedName("category")
     private String category;
     @SerializedName("openTime")
@@ -26,11 +26,17 @@ public class Place {
     private String closeTime;
     @SerializedName("city")
     private String city;
+    @SerializedName("tripRating")
+    private Double tripAdvisorRating;
+    @SerializedName("yelpRating")
+    private Double yelpRating;
 
-    public Place(String placeId, String name, String address, String category, String openTime, String closeTime) {
+    public Place(String placeId, String name, String address, Double lat, Double lng, String category, String openTime, String closeTime) {
         this.placeId = placeId;
         this.name = name;
         this.address = address;
+        this.lat = lat;
+        this.lng = lng;
         this.category = category;
         this.openTime = openTime;
         this.closeTime = closeTime;
@@ -61,19 +67,19 @@ public class Place {
         this.address = address;
     }
 
-    public String getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public void setLat(String lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
     }
 
-    public String getLng() {
+    public Double getLng() {
         return lng;
     }
 
-    public void setLng(String lng) {
+    public void setLng(Double lng) {
         this.lng = lng;
     }
 
@@ -109,4 +115,19 @@ public class Place {
         this.city = city;
     }
 
+    public Double getTripAdvisorRating() {
+        return tripAdvisorRating;
+    }
+
+    public void setTripAdvisorRating(Double tripAdvisorRating) {
+        this.tripAdvisorRating = tripAdvisorRating;
+    }
+
+    public Double getYelpRating() {
+        return yelpRating;
+    }
+
+    public void setYelpRating(Double yelpRating) {
+        this.yelpRating = yelpRating;
+    }
 }

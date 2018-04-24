@@ -59,7 +59,7 @@ public class AppHelper {
     private String firstTimeLoginNewPassword;
     private List<String> mfaAllOptionsCode;
 
-    private String loggedInUser;
+    private User loggedInUser;
 
 
     /**
@@ -365,11 +365,11 @@ public class AppHelper {
         }
     }
 
-    public String getLoggedInUser() {
+    public User getLoggedInUser() {
         return loggedInUser;
     }
 
-    public void setLoggedInUser(String loggedInUser) {
+    public void setLoggedInUser(User loggedInUser) {
         this.loggedInUser = loggedInUser;
     }
 }

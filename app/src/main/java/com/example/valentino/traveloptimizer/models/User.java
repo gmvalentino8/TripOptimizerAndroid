@@ -18,8 +18,8 @@ public class User {
     private String birthdate;
     @SerializedName("address")
     private String address;
-    @Expose(serialize = false, deserialize = false)
-    private List<String> trips;
+    @SerializedName("age")
+    private String age;
 
     public User(String email, String name, String birthdate, String address) {
         this.email = email;
@@ -27,7 +27,6 @@ public class User {
         this.birthdate = birthdate;
         this.address = address;
     }
-
 
     public String getEmail() {
         return email;
@@ -61,11 +60,11 @@ public class User {
         this.address = address;
     }
 
-    public List<String> getTrips() {
-        return trips;
+    public String getAge() {
+        return age;
     }
 
-    public void setTrips(List<String> trips) {
-        this.trips = trips;
+    public void setAge(String age) {
+        this.age = age;
     }
 }

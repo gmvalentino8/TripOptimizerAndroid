@@ -1,8 +1,6 @@
 package com.example.valentino.traveloptimizer.api;
 
 import com.example.valentino.traveloptimizer.models.Place;
-import com.example.valentino.traveloptimizer.models.TestApiPlace;
-import com.example.valentino.traveloptimizer.models.TestApiTrip;
 import com.example.valentino.traveloptimizer.models.Trip;
 import com.example.valentino.traveloptimizer.models.User;
 
@@ -24,21 +22,18 @@ import retrofit2.http.Query;
 public interface ApiInterface {
 
     @POST("prod/user")
-    Call<Trip> postUserData(@Body User user);
+    Call<Void> postUserData(@Body User user);
 
     @GET("prod/user/{email}")
-    Call<User> getUserData(@Path("email") String email);
+    Call<List<User>> getUserData(@Path("email") String email);
 
     @GET("prod/user/{email}/trip")
     Call<List<Trip>> getUserTrips(@Path("email") String email);
 
-    @GET("prod/user/{email}/trip")
-    Call<TestApiTrip> testGetUserTrips(@Path("email") String email);
-
     @POST("prod/user/{email}/trip/")
     Call<Void> postTripData(@Path("email") String email, @Body Trip trip);
 
-    @GET("prod/trip/{email}/trip/{tid}")
+    @GET("prod/user/{email}/trip/{tid}")
     Call<List<Trip>> getTripData(@Path("email") String email, @Path("tid") String tid);
 
     @PUT("prod/user/{email}/trip/{tid}")
@@ -48,8 +43,23 @@ public interface ApiInterface {
     Call<Void> deleteTrip(@Path("email") String email, @Path("tid") String tid);
 
     @GET("/prod/place")
-    Call<List<Place>> getAllPlaces();
+    Call<List<Place>> getAllPlaces(@Query("city") String city, @Query("category") String category);
 
-    @GET("/prod/place")
-    Call<TestApiPlace> testGetAllPlaces();
+    @GET("/prod/place/{pid}")
+    Call<List<Place>> getPlaceData(@Path("pid") String pid);
+
+    @GET("/prod/trip/{tid}/place")
+    Call<List<Place>> getTripPlaces(@Path("tid") String tid);
+
+    @GET("/prod/trip/{tid}/place")
+    Call<List<Place>> getTripItinerary(@Path("tid") String tid);
+
+    @DELETE("/prod/trip/{tid}/place/{pid}")
+    Call<Void> deleteTripPlace(@Path("tid") String tid, @Path("pid") String pid);
+
+    @GET("prod/place/recommended")
+    Call<List<Place>> getRecommendedPlaces(@Query("city") String city, @Query("age") String age);
+
+    @POST("/prod/trip/{tid}/place/{pid}")
+    Call<Void> postTripPlace(@Path("tid") String tid, @Path("pid") String pid);
 }

@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,8 +19,16 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler;
+import com.example.valentino.traveloptimizer.api.ApiClient;
+import com.example.valentino.traveloptimizer.api.ApiInterface;
+import com.example.valentino.traveloptimizer.fragments.ViewTripsFragment;
+import com.example.valentino.traveloptimizer.models.User;
 import com.example.valentino.traveloptimizer.utilities.CommonDependencyProvider;
 import com.example.valentino.traveloptimizer.R;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
@@ -29,7 +38,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText givenName;
     private EditText birthday;
     private EditText address;
-
 
     private Button signUp;
     private AlertDialog userDialog;
@@ -241,6 +249,24 @@ public class RegisterActivity extends AppCompatActivity {
                 if (userInput.length() > 0) {
                     userAttributes.addAttribute(provider.getAppHelper().getSignUpFieldsC2O().get(address.getHint()), userInput);
                 }
+
+                User user = new User(email.getText().toString(),  givenName.getText().toString(),
+                        birthday.getText().toString(), address.getText().toString());
+                ApiInterface apiInterface = ApiClient.getApiInstance();
+                Call<Void> call = apiInterface.postUserData(user);
+                call.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.d("PostTrip", "Successful");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.d("PostTrip", "Retrofit failed to get data");
+                        t.printStackTrace();
+                        call.cancel();
+                    }
+                });
 
                 showWaitDialog("Signing up...");
 

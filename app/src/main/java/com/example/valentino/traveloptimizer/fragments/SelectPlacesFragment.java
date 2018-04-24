@@ -1,11 +1,9 @@
 package com.example.valentino.traveloptimizer.fragments;
 
-import android.app.FragmentManager;
-import android.content.Context;
+import android.support.v4.app.FragmentManager;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,22 +13,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.valentino.traveloptimizer.R;
 import com.example.valentino.traveloptimizer.adapters.PlacesAdapter;
-import com.example.valentino.traveloptimizer.adapters.TripsAdapter;
 import com.example.valentino.traveloptimizer.api.ApiClient;
 import com.example.valentino.traveloptimizer.api.ApiInterface;
 import com.example.valentino.traveloptimizer.models.Place;
-import com.example.valentino.traveloptimizer.models.TestApiPlace;
-import com.example.valentino.traveloptimizer.models.TestApiTrip;
 import com.example.valentino.traveloptimizer.models.Trip;
+import com.example.valentino.traveloptimizer.models.User;
 import com.example.valentino.traveloptimizer.utilities.CommonDependencyProvider;
 import com.example.valentino.traveloptimizer.utilities.RecyclerTouchListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,10 +34,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SelectPlacesFragment extends Fragment {
-    private boolean editing;
     private Trip currTrip;
+    private List<String> selectedPlaces;
     private List<Place> places;
-    private Set<String> selectedIdSet;
+    private Place place;
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
@@ -57,38 +51,14 @@ public class SelectPlacesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         places = new ArrayList<>();
-        selectedIdSet = new HashSet<>();
 
         if (getArguments() != null) {
-            editing = getArguments().getBoolean("Edit", false);
             currTrip = (Trip) getArguments().getSerializable("Trip");
-            if (editing && currTrip != null) {
-                selectedIdSet = new HashSet<>(currTrip.getPlaces());
+            if (currTrip != null && currTrip.getPlaces() != null) {
+                selectedPlaces = currTrip.getPlaces();
             }
         }
-    }
-
-    private void testGetPlaces() {
-        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
-        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
-        ApiInterface apiInterface = ApiClient.getApiInstance();
-        Call<TestApiPlace> call = apiInterface.testGetAllPlaces();
-        call.enqueue(new Callback<TestApiPlace>() {
-            @Override
-            public void onResponse(Call<TestApiPlace> call, Response<TestApiPlace> response) {
-                TestApiPlace resource = response.body();
-                places = resource.getData();
-                adapter = new PlacesAdapter(places, selectedIdSet, getContext());
-                recyclerView.setAdapter(adapter);
-            }
-
-            @Override
-            public void onFailure(Call<TestApiPlace> call, Throwable t) {
-                Log.d("ViewPlacesFragment", "Retrofit failed to get data");
-                t.printStackTrace();
-                call.cancel();
-            }
-        });
+//        getPlaces();
     }
 
     @Override
@@ -98,7 +68,7 @@ public class SelectPlacesFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_select_places, container, false);
 
         recyclerView = root.findViewById(R.id.placesRecyclerView);
-        adapter = new PlacesAdapter(places, selectedIdSet, getContext());
+        adapter = new PlacesAdapter(places);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
@@ -106,16 +76,11 @@ public class SelectPlacesFragment extends Fragment {
             @Override
             public void onClick(View view, int position) {
                 Place item = places.get(position);
-                if (selectedIdSet.contains(item.getPlaceId())) {
-                    // Remove item
-                    selectedIdSet.remove(item.getPlaceId());
-                    ((CardView) view).setCardBackgroundColor(Color.WHITE);
-
-                }
-                else {
-                    // Add item
-                    selectedIdSet.add(item.getPlaceId());
-                    ((CardView) view).setCardBackgroundColor(Color.GRAY);
+                if (!selectedPlaces.contains(item.getPlaceId())) {
+                    place = item;
+                    selectedPlaces.add(item.getPlaceId());
+                    currTrip.setPlaces(selectedPlaces);
+                    putTrip(currTrip);
                 }
             }
 
@@ -123,84 +88,55 @@ public class SelectPlacesFragment extends Fragment {
             public void onLongClick(View view, int position) {
             }
         }));
-        testGetPlaces();
-
-        FloatingActionButton fab = root.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("1. Itinerary", ""+selectedIdSet.size());
-                currTrip.setPlaces(new ArrayList<>(selectedIdSet));
-                Log.d("2. Itinerary", ""+currTrip.getPlaces().size());
-                currTrip.setItinerary(TextUtils.join(" ", currTrip.getPlaces()));
-                Log.d("3. Itinerary", ""+TextUtils.join(" ", currTrip.getPlaces()));
-
-                // Update Database Here
-                if (editing) {
-                    putTrip(currTrip);
-                }
-                else {
-                    postTrip(currTrip);
-                }
-            }
-        });
 
         return root;
     }
 
-    private void postTrip(Trip trip) {
-        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
-        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
-        ApiInterface apiInterface = ApiClient.getApiInstance();
-        Call<Void> call = apiInterface.postTripData(userEmail, trip);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                Log.d("PostTrip", "Successful");
-                ViewTripsFragment viewTripsFragment = new ViewTripsFragment();
-                Bundle args = new Bundle();
-                args.putSerializable("Trip", currTrip);
-                viewTripsFragment.setArguments(args);
-                FragmentManager manager = getActivity().getFragmentManager();
-                if (manager.getBackStackEntryCount() > 0) {
-                    FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
-                    manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                }
-                manager.beginTransaction()
-                        .replace(R.id.content, viewTripsFragment)
-                        .commit();
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.d("PostTrip", "Retrofit failed to get data");
-                t.printStackTrace();
-                call.cancel();
-            }
-        });
-    }
+//    private void getPlaces() {
+//        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
+//        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
+//        ApiInterface apiInterface = ApiClient.getApiInstance();
+//        Call<List<Place>> call = apiInterface.getAllPlaces();
+//        call.enqueue(new Callback<List<Place>>() {
+//            @Override
+//            public void onResponse(Call<List<Place>> call, Response<List<Place>> response) {
+//                places = response.body();
+//                Log.d("Places", "" + response.body());
+//                adapter = new PlacesAdapter(places);
+//                recyclerView.setAdapter(adapter);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<Place>> call, Throwable t) {
+//                Log.d("ViewPlacesFragment", "Retrofit failed to get data");
+//                t.printStackTrace();
+//                call.cancel();
+//            }
+//        });
+//    }
 
     private void putTrip(Trip trip) {
         CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
-        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
+        User user = commonDependencyProvider.getAppHelper().getLoggedInUser();
         ApiInterface apiInterface = ApiClient.getApiInstance();
-        Call<Void> call = apiInterface.putTripData( userEmail, currTrip.getTripId(), trip);
+        Call<Void> call = apiInterface.putTripData(user.getEmail(), currTrip.getTripId(), trip);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.d("PutTrip", "Successful");
-                ViewTripsFragment viewTripsFragment = new ViewTripsFragment();
-                Bundle args = new Bundle();
-                args.putSerializable("Trip", currTrip);
-                viewTripsFragment.setArguments(args);
-                FragmentManager manager = getActivity().getFragmentManager();
-                if (manager.getBackStackEntryCount() > 0) {
-                    FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
-                    manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                }
-                manager.beginTransaction()
-                        .replace(R.id.content, viewTripsFragment)
-                        .commit();
+                getFragmentManager().popBackStack();
+//                ViewTripsFragment viewTripsFragment = new ViewTripsFragment();
+//                Bundle args = new Bundle();
+//                args.putSerializable("Trip", currTrip);
+//                viewTripsFragment.setArguments(args);
+//                FragmentManager manager = getFragmentManager();
+//                if (manager.getBackStackEntryCount() > 0) {
+//                    FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
+//                    manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//                }
+//                manager.beginTransaction()
+//                        .replace(R.id.content, viewTripsFragment)
+//                        .commit();
             }
 
             @Override
@@ -211,4 +147,5 @@ public class SelectPlacesFragment extends Fragment {
             }
         });
     }
+
 }

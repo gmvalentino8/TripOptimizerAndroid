@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private CognitoUser user;
     private AlertDialog userDialog;
     private ProgressDialog waitDialog;
+    private Toolbar toolbar;
 
     private CommonDependencyProvider provider;
 
@@ -48,10 +49,14 @@ public class MainActivity extends AppCompatActivity {
             if (savedInstanceState != null) {
                 return;
             }
-            ViewTripsFragment testFragment = new ViewTripsFragment();
-            getFragmentManager().beginTransaction().add(R.id.content, testFragment).commit();
+            ViewTripsFragment viewTripsFragment = new ViewTripsFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.content, viewTripsFragment).commit();
 
         }
+
+        toolbar = findViewById(R.id.topToolBar);
+        setSupportActionBar(toolbar);
 
         // Get the user name
         username = provider.getAppHelper().getCurrUser();

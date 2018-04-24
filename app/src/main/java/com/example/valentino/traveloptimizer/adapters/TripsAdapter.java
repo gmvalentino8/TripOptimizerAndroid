@@ -14,6 +14,8 @@ import com.example.valentino.traveloptimizer.models.City;
 import com.example.valentino.traveloptimizer.models.Trip;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -23,6 +25,13 @@ import java.util.List;
 public class TripsAdapter extends RecyclerView.Adapter {
     private List<Trip> tripsDataSet;
     private Context mContext;
+
+    private Comparator<Trip> comparator = new Comparator<Trip>() {
+        @Override
+        public int compare(Trip a, Trip b) {
+            return (int) (b.getStartDate() - a.getStartDate());
+        }
+    };
 
     public TripsAdapter(List<Trip> trips, Context context) {
         tripsDataSet = trips;
@@ -39,22 +48,19 @@ public class TripsAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Trip data = tripsDataSet.get(position);
         TripViewHolder tripHolder = ((TripViewHolder) holder);
-        tripHolder.tripsCityTextView.setText(data.getCity());
-        int imageId = mContext.getResources().getIdentifier(data.getCity().toLowerCase(), "drawable", mContext.getPackageName());
-        tripHolder.tripsCityImageView.setImageResource(imageId);
-        Calendar startDate = Calendar.getInstance();
-        startDate.setTimeInMillis(data.getStartDate());
-        Calendar endDate = Calendar.getInstance();
-        endDate.setTimeInMillis(data.getEndDate());
-        tripHolder.tripsDateTextView.setText(startDate.get(Calendar.MONTH) + " " + startDate.get(Calendar.DATE) + " - "
-                + endDate.get(Calendar.MONTH) + " " + endDate.get(Calendar.DATE));
-        tripHolder.tripsCountdownTextView.setText("3 Months Ago");
-//        tripHolder.tripsPlacesCountTextView.setText(data.getItinerary().split(" ").length + " Places Visited");
+        tripHolder.bindData(data);
     }
 
     @Override
     public int getItemCount() {
         return tripsDataSet.size();
+    }
+
+    public void addItems(List<Trip> data) {
+        tripsDataSet.clear();
+        tripsDataSet.addAll(data);
+        Collections.sort(tripsDataSet, comparator);
+        notifyDataSetChanged();
     }
 
     public static class TripViewHolder extends RecyclerView.ViewHolder {
@@ -71,6 +77,21 @@ public class TripsAdapter extends RecyclerView.Adapter {
             tripsDateTextView = itemView.findViewById(R.id.tripsDateTextView);
             tripsCountdownTextView = itemView.findViewById(R.id.tripsCountdownTextView);
             tripsPlacesCountTextView = itemView.findViewById(R.id.tripsPlacesCountTextView);
+        }
+
+        private void bindData(Trip trip) {
+            tripsCityTextView.setText(trip.getCity());
+            int imageId = itemView.getContext().getResources()
+                    .getIdentifier(trip.getCity().toLowerCase(),
+                            "drawable", itemView.getContext().getPackageName());
+            tripsCityImageView.setImageResource(imageId);
+            Calendar startDate = Calendar.getInstance();
+            startDate.setTimeInMillis(trip.getStartDate());
+            Calendar endDate = Calendar.getInstance();
+            endDate.setTimeInMillis(trip.getEndDate());
+            tripsDateTextView.setText(trip.getStartDateString() + " - "+ trip.getEndDateString());
+            tripsCountdownTextView.setText("3 Months Ago");
+            //        tripHolder.tripsPlacesCountTextView.setText(data.getItinerary().split(" ").length + " Places Visited");
         }
     }
 

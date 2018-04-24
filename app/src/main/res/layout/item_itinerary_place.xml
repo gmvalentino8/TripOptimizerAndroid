@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/placeCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardMaxElevation="4dp"
+    card_view:cardElevation="2dp"
+    android:layout_margin="2dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
+
+        <LinearLayout
+            android:id="@+id/timeLinearLayout"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/startTimeTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:text="10:00 AM"
+                android:layout_margin="2dp"/>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/colorAccent"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:text="11:00 AM"
+                android:layout_margin="2dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/placeNameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/timeLinearLayout"
+            android:gravity="center_vertical"
+            android:text="test"
+            android:textSize="18sp" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/placeNameTextView"
+            android:layout_toEndOf="@+id/timeLinearLayout"
+            android:background="#000000"/>
+
+        <TextView
+            android:id="@+id/categoryTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="10dp"
+            android:layout_below="@+id/divider"
+            android:layout_toEndOf="@+id/timeLinearLayout"
+            android:drawableStart="@drawable/ic_sort"
+            android:gravity="center_vertical|end"
+            android:textSize="16sp"
+            android:text="test"
+            android:layout_margin="2dp"/>
+
+        <LinearLayout
+            android:id="@+id/tripAdviserRatings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/categoryTextView"
+            android:layout_toEndOf="@+id/timeLinearLayout"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingEnd="10dp">
+
+            <TextView
+                android:id="@+id/tripAdviserRatingTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/logo_trip_adviser_small"
+                android:gravity="center_vertical"
+                android:layout_margin="2dp"/>
+
+            <ImageView
+                android:id="@+id/taStar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_empty"/>
+
+            <ImageView
+                android:id="@+id/taStar2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_empty"/>
+
+            <ImageView
+                android:id="@+id/taStar3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_empty"/>
+
+            <ImageView
+                android:id="@+id/taStar4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_empty"/>
+
+            <ImageView
+                android:id="@+id/taStar5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_empty"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/yelpRatings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tripAdviserRatings"
+            android:layout_toEndOf="@+id/timeLinearLayout"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingEnd="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/logo_yelp_small"
+                android:gravity="center_vertical"
+                android:layout_margin="2dp"/>
+
+            <ImageView
+                android:id="@+id/yelpStar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_empty"/>
+
+            <ImageView
+                android:id="@+id/yelpStar2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_empty"/>
+
+            <ImageView
+                android:id="@+id/yelpStar3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_empty"/>
+
+            <ImageView
+                android:id="@+id/yelpStar4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_empty"/>
+
+            <ImageView
+                android:id="@+id/yelpStar5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_star_empty"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/placeAddressTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/yelpRatings"
+            android:layout_toEndOf="@+id/timeLinearLayout"
+            android:drawableStart="@drawable/ic_location_on_black_24dp"
+            android:gravity="center_vertical"
+            android:textSize="16sp"
+            android:layout_margin="2dp"/>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

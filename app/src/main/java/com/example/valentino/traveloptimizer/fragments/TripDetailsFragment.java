@@ -1,9 +1,10 @@
 package com.example.valentino.traveloptimizer.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,14 +14,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.valentino.traveloptimizer.R;
+import com.example.valentino.traveloptimizer.activities.EditTripActivity;
 import com.example.valentino.traveloptimizer.api.ApiClient;
 import com.example.valentino.traveloptimizer.api.ApiInterface;
 import com.example.valentino.traveloptimizer.models.Trip;
+import com.example.valentino.traveloptimizer.models.User;
 import com.example.valentino.traveloptimizer.utilities.CommonDependencyProvider;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -50,6 +54,13 @@ public class TripDetailsFragment extends Fragment {
             currTrip = (Trip) getArguments().getSerializable("Trip");
             city = currTrip.getCity();
         }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getTrip();
     }
 
     @Override
@@ -57,8 +68,6 @@ public class TripDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_trip_details, container, false);
-        TextView cityName = root.findViewById(R.id.tripCityLabel);
-        cityName.setText("Trip to " + city);
         arrivalDateEditText = root.findViewById(R.id.arrivalDateEditText);
         arrivalDateEditText.setFocusable(false);
         arrivalDateEditText.setClickable(false);
@@ -74,28 +83,14 @@ public class TripDetailsFragment extends Fragment {
         accommodationEditText = root.findViewById(R.id.accommodationEditText);
         accommodationEditText.setFocusable(false);
         accommodationEditText.setClickable(false);
-        arrivalDate.setTimeInMillis(currTrip.getStartDate());
-        setDateLabel(arrivalDate, arrivalDateEditText);
-        setTimeLabel(arrivalDate, arrivalTimeEditText);
-        departureDate.setTimeInMillis(currTrip.getEndDate());
-        setDateLabel(departureDate, departureDateEditText);
-        setTimeLabel(departureDate, departureTimeEditText);
-        accommodationEditText.setText(currTrip.getStartName());
 
         FloatingActionButton fab = root.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateTripFragment createTripFragment = new CreateTripFragment();
-                Bundle args = new Bundle();
-                args.putSerializable("Trip", currTrip);
-                args.putBoolean("Edit", true);
-                createTripFragment.setArguments(args);
-                getActivity().getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.content, createTripFragment)
-                        .addToBackStack("editCreateTrip")
-                        .commit();
+                Intent i = new Intent(getContext(), EditTripActivity.class);
+                i.putExtra("Trip", currTrip);
+                startActivity(i);
             }
         });
 
@@ -108,6 +103,35 @@ public class TripDetailsFragment extends Fragment {
         });
 
         return root;
+    }
+
+    public void getTrip() {
+        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
+        User user = commonDependencyProvider.getAppHelper().getLoggedInUser();
+        ApiInterface apiInterface = ApiClient.getApiInstance();
+        Call<List<Trip>> call = apiInterface.getTripData(user.getEmail(), currTrip.getTripId());
+        Log.d("API CALL", "Trip Id : " + currTrip.getTripId());
+        call.enqueue(new Callback<List<Trip>>() {
+            @Override
+            public void onResponse(Call<List<Trip>> call, Response<List<Trip>> response) {
+                Log.d("API CALL", "Response : "+response.body());
+                currTrip = response.body().get(0);
+                arrivalDate.setTimeInMillis(currTrip.getStartDate());
+                setDateLabel(arrivalDate, arrivalDateEditText);
+                setTimeLabel(arrivalDate, arrivalTimeEditText);
+                departureDate.setTimeInMillis(currTrip.getEndDate());
+                setDateLabel(departureDate, departureDateEditText);
+                setTimeLabel(departureDate, departureTimeEditText);
+                accommodationEditText.setText(currTrip.getStartName());
+            }
+
+            @Override
+            public void onFailure(Call<List<Trip>> call, Throwable t) {
+                Log.d("Get Trip", "Retrofit failed to get data");
+                t.printStackTrace();
+                call.cancel();
+            }
+        });
     }
 
     public void setDateLabel(final Calendar date, EditText label) {
@@ -124,9 +148,9 @@ public class TripDetailsFragment extends Fragment {
 
     private void deleteTrip() {
         CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
-        String userEmail = commonDependencyProvider.getAppHelper().getLoggedInUser();
+        User user = commonDependencyProvider.getAppHelper().getLoggedInUser();
         ApiInterface apiInterface = ApiClient.getApiInstance();
-        Call<Void> call = apiInterface.deleteTrip(userEmail, currTrip.getTripId());
+        Call<Void> call = apiInterface.deleteTrip(user.getEmail(), currTrip.getTripId());
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

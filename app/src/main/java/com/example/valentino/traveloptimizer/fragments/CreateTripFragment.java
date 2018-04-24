@@ -2,13 +2,15 @@ package com.example.valentino.traveloptimizer.fragments;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.FragmentManager;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +21,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.valentino.traveloptimizer.R;
+import com.example.valentino.traveloptimizer.api.ApiClient;
+import com.example.valentino.traveloptimizer.api.ApiInterface;
 import com.example.valentino.traveloptimizer.models.Trip;
+import com.example.valentino.traveloptimizer.models.User;
+import com.example.valentino.traveloptimizer.utilities.CommonDependencyProvider;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -30,13 +36,16 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class CreateTripFragment extends Fragment implements View.OnClickListener {
     final int REQUEST_PLACE_PICKER = 1;
 
     private boolean editing = false;
     private String city;
     private Trip currTrip;
-    private Trip editTrip;
     private Calendar arrivalDate = Calendar.getInstance();
     private Calendar departureDate = Calendar.getInstance();
     private Double accommodationLat;
@@ -46,7 +55,6 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
     private EditText departureDateEditText;
     private EditText departureTimeEditText;
     private EditText accommodationEditText;
-    private Button nextButton;
 
     public CreateTripFragment() {
         // Required empty public constructor
@@ -63,11 +71,15 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle("Trip to " + city);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_create_trip, container, false);
-        TextView cityName = root.findViewById(R.id.tripCityLabel);
-        cityName.setText("Trip to " + city);
         arrivalDateEditText = root.findViewById(R.id.arrivalDateEditText);
         arrivalDateEditText.setFocusable(false);
         arrivalDateEditText.setClickable(true);
@@ -177,6 +189,7 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
             accommodationLat = accommodationLatLng.latitude;
             accommodationLng = accommodationLatLng.longitude;
             String attributions = PlacePicker.getAttributions(data);
+            Log.d("Place Picker", "Lat Long: "+ accommodationLat + ", " + accommodationLng);
             if (attributions == null) {
                 attributions = "";
             }
@@ -210,22 +223,42 @@ public class CreateTripFragment extends Fragment implements View.OnClickListener
                 onPickButtonClick();
                 break;
             case R.id.fab:
-                SelectPlacesFragment selectPlacesFragment = new SelectPlacesFragment();
                 currTrip.setStartDate(arrivalDate.getTimeInMillis());
                 currTrip.setEndDate(departureDate.getTimeInMillis());
                 currTrip.setStartLat(accommodationLat);
                 currTrip.setStartLng(accommodationLng);
                 currTrip.setStartName(accommodationEditText.getText().toString());
-                Bundle args = getArguments();
-                args.putSerializable("Trip", currTrip);
-                args.putBoolean("Edit", editing);
-                selectPlacesFragment.setArguments(args);
-                getActivity().getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.content, selectPlacesFragment)
-                        .addToBackStack("selectInfo")
-                        .commit();
+                postTrip(currTrip);
+
+                getActivity().getFragmentManager().popBackStack();
                 break;
         }
+    }
+
+    private void postTrip(Trip trip) {
+        CommonDependencyProvider commonDependencyProvider = new CommonDependencyProvider();
+        User user = commonDependencyProvider.getAppHelper().getLoggedInUser();
+        ApiInterface apiInterface = ApiClient.getApiInstance();
+        Call<Void> call = apiInterface.postTripData(user.getEmail(), trip);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.d("PostTrip", "Successful");
+                ViewTripsFragment viewTripsFragment = new ViewTripsFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("Trip", currTrip);
+                viewTripsFragment.setArguments(args);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.content, viewTripsFragment)
+                        .commit();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d("PostTrip", "Retrofit failed to get data");
+                t.printStackTrace();
+                call.cancel();
+            }
+        });
     }
 }

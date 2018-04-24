@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -14,9 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDz56q3NROWDn6Qv3tY62M9lxYJ2YtMq34" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB1hxxmIFkmsWFE0Vd-6IU9jO6pSWtfShc" />
 
         <activity
             android:name=".activities.LoginActivity"
@@ -39,8 +39,12 @@
         <activity
             android:name=".activities.SelectCityActivity"
             android:label="@string/title_activity_select_city"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity android:name=".activities.SelectTripDetailsActivity"></activity>
+        <activity
+            android:name=".activities.SelectPlacesActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activities.EditTripActivity"></activity>
     </application>
 
 </manifest>
